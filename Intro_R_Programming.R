@@ -1551,58 +1551,181 @@ y[x < 0] <- NA    # Insert NAs wherever x < 0
 boxplot(x ~ is.na(y)) # Boxplot splitting x into groups according to is.na(y)
 
 
-# Slide 170
+# Slide 170 - Expository graphs: axes -------------------------------
+
+# Label your axes with xlab, ylab and ALWAYS include units
+plot(pData$JWMNP,pData$WAGP,pch=19,col="blue",cex=0.5,
+     xlab="Travel time (min)",ylab="Last 12 month wages (dollars)")
+
+
+# Slide 171 - Expository graphs: axes larger ------------------------
+
+# Same as above, just make the axes easier to read
+plot(pData$JWMNP,pData$WAGP,pch=19,col="blue",cex=0.5,
+     xlab="Travel time (min)",ylab="Last 12 month wages (dollars)",cex.lab=2,cex.axis=1.5)
+
+
+# Slide 172 - Expository graphs: legends ----------------------------
+
+plot(pData$JWMNP,pData$WAGP,pch=19,col="blue",cex=0.5,xlab="TT (min)",ylab="Wages (dollars)")
+
+# Use legend() with x,y coords for upper/left corner of legend box 
+# Might have to play around with positioning
+legend(100,200000,legend="All surveyed",col="blue",pch=19,cex=0.5)
+
+
+# Slide 173 - Expository graphs: legends ---------------------------
+
+# Use color to represent 3rd variable: SEX
+plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="TT (min)",ylab="Wages (dollars)",col=pData$SEX)
+
+# Use col argument to sync up color coding for sEX and legend
+legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
+
+
+# Slide 174 - Expository graphs: Titles ----------------------------
+
+# Always use main argument to present title of the graph ... explain well!
+plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="CT (min)",
+     ylab="Wages (dollars)",col=pData$SEX,main="Wages earned versus commute time")
+legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
+
+
+# Slide 175 - Expository graphs: Multiple Panels -------------------
+
+# Stacking graphs is common, up to 4 otherwise too hard to read
+par(mfrow=c(1,2))
+
+# Histogram
+hist(pData$JWMNP,xlab="CT (min)",col="blue",breaks=100,main="")
+
+# Scatterplot with legend
+plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="CT (min)",ylab="Wages (dollars)",col=pData$SEX)
+legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
+
+par(mfrow=c(1,1))   # Reset panel argument
+
+
+# Slide 175 (additional) - Adding text -----------------------------
+
+par(mfrow=c(1,2))
+hist(pData$JWMNP,xlab="CT (min)",col="blue",breaks=100,main="")
+# Adding figure designation (a)
+mtext(text="Figure (a)",side=3,line=1)
+
+plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="CT (min)",ylab="Wages (dollars)",col=pData$SEX)
+legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
+# Adding figure designation (b)
+mtext(text="Figure (b)",side=3,line=1)
+
+par(mfrow=c(1,1))   # Reset panel argument
+
+# Slide 175 (additional) - Creating a PDF --------------------------
+
+pdf(file="twoPanel.pdf",height=4,width=8)
+par(mfrow=c(1,2))
+hist(pData$JWMNP,xlab="CT (min)",col="blue",breaks=100,main="")
+mtext(text="(a)",side=3,line=1)
+plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="CT (min)",ylab="Wages (dollars)",col=pData$SEX)
+legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
+mtext(text="(b)",side=3,line=1)
+dev.off()
+
+# Slide 175 (additional) - Creating a PNG --------------------------
+
+png(file="twoPanel.png",height=480,width=(2*480))
+par(mfrow=c(1,2))
+hist(pData$JWMNP,xlab="CT (min)",col="blue",breaks=100,main="")
+mtext(text="(a)",side=3,line=1)
+plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="CT (min)",ylab="Wages (dollars)",col=pData$SEX)
+legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
+mtext(text="(b)",side=3,line=1)
+dev.off()
 
 
 
+# Slide 176 - Linear Regression -----------------------------------
+
+install.packages("UsingR")
+library(UsingR)
+
+data(galton)        # 928x2 just two variables: child height, parent height
+summary(galton)     # Get familiar with data
+
+# Do some EDA
+par(mfrow=c(1,2))
+hist(galton$child,col="blue",breaks=100)
+hist(galton$parent,col="blue",breaks=100)
+par(mfrow=c(1,1))
+
+# Slide 177 - Linear Regression -----------------------------------
+
+# Distribution of the child heights
+hist(galton$child,col="blue",breaks=100)
 
 
+# Slide 178 - Linear Regression -----------------------------------
+
+hist(galton$child,col="blue",breaks=100)
+
+# Add a mean line to the histogram. The mean shows where the distribution
+# is centered.
+meanChild <- mean(galton$child)
+lines(rep(meanChild,100),seq(0,150,length=100),col="red",lwd=5)
 
 
+# Slide 179 - Linear Regression ----------------------------------
+
+# Scatterplot to see how data might be related. 
+# An oval shaped cloud implied there might be a relationship
+# NOTE: each point on the graph could actually be several stacked up pts.
+plot(galton$parent,galton$child,pch=19,col="blue")
 
 
+# Slide 180 - Linear Regression -----------------------------------
+
+plot(galton$parent,galton$child,pch=19,col="blue")
+
+# Say - average parent = 65 inches tall, then what is child height?
+near65 <- galton[abs(galton$parent - 65)<1, ]
+
+points(near65$parent,near65$child,pch=19,col="red")
+lines(seq(64,66,length=100),rep(mean(near65$child),100),col="red",lwd=4)
 
 
+# Slide 181 - Linear Regression -----------------------------------
+
+plot(galton$parent,galton$child,pch=19,col="blue")
+
+# Say - average parent = 71 inches tall, then what is child height?
+near71 <- galton[abs(galton$parent - 71)<1, ]
+points(near71$parent,near71$child,pch=19,col="red")
+lines(seq(70,72,length=100),rep(mean(near71$child),100),col="red",lwd=4)
 
 
+# Slide 182 - Linear Regression ----------------------------------
+
+plot(galton$parent,galton$child,pch=19,col="blue")
+
+# Fit a linear model using basic least squares
+lm1 <- lm(galton$child ~ galton$parent)
+
+# Draw the regression line
+lines(galton$parent,lm1$fitted,col="red",lwd=3)
+
+summary(lm1)
+names(lm1)
 
 
+# Slide 183 - Linear Regression ----------------------------------
 
+par(mfrow=c(1,2))
+plot(galton$parent,galton$child,pch=19,col="blue")
+lines(galton$parent,lm1$fitted,col="red",lwd=3)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Residuals plot - shoudl all be centered around 0 line
+plot(galton$parent,lm1$residuals,col="blue",pch=19)
+abline(c(0,0),col="red",lwd=3)
 
 
 # Slide 187 - K-means clustering --------------------------
@@ -1655,78 +1778,4 @@ kmeansObj$centers    # 3x2 matrix: x column, y column
 # pch=3 is a "+" symbol, and cex=3 magnifies it. 
 # lwd arg is for line width for drawing symbols
 points(kmeansObj$centers,col=1:3,pch=3,cex=3,lwd=3)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
