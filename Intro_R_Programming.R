@@ -1001,6 +1001,8 @@ Levels: 1 2 3 4 5
 # Compute factor interactions for f1 and f2
 # interaction() computes a factor which represents the 
 # interaction of the given factors.
+# The function combines all the levels of f1 with all the levels of f2
+# The result is 10 levels since 2 levels for f1 and 5 levels for f2
 interaction(f1, f2)
 [1] 1.1 1.1 1.2 1.2 1.3 2.3 2.4 2.4 2.5 2.5
 Levels: 1.1 2.1 1.2 2.2 1.3 2.3 1.4 2.4 1.5 2.5
@@ -1127,22 +1129,27 @@ rnorm(5)
 
 # Slide 129 - generating Poisson data
 
-rpois(10, 1)    # lambda=1, vector of means
+rpois(10, 1)    # lambda (rate) =1, vector of means
 [1] 0 0 1 1 2 1 1 4 1 2
 
-rpois(10, 2)
+rpois(10, 2)    # Now rate = 2 so slightly larger
 [1] 4 1 2 0 1 1 0 1 4 1
 
-rpois(10, 20)
+rpois(10, 20)   # Now rate = 20
 [1] 19 19 24 23 22 24 23 20 11 22
 
-# Cummulative distribution
+# Cummulative distribution for Poisson allows you to evaluate the 
+# following probabilities:
+
+# Probability that a Poisson random varialbe is <= 2, if rate  2
 ppois(2, 2)     # Pr(x <= 2)
 [1] 0.6766764
 
+# Probability that a Poisson random varialbe is <= 4, if rate  2
 ppois(4, 2)     # Pr(x <= 4)
 [1] 0.947347
 
+# Probability that a Poisson random varialbe is <= 6, if rate  2
 ppois(6,2)      # Pr(x <= 6)
 [1] 0.9954662
 
@@ -1686,10 +1693,14 @@ plot(galton$parent,galton$child,pch=19,col="blue")
 
 plot(galton$parent,galton$child,pch=19,col="blue")
 
-# Say - average parent = 65 inches tall, then what is child height?
+# Say we know average parent = 65 inches tall, then what is child height?
+# Subset 89 rows where parent height is "close to" 65
 near65 <- galton[abs(galton$parent - 65)<1, ]
 
+# Plot the subset as red dots
 points(near65$parent,near65$child,pch=19,col="red")
+
+# Draw reference line in red: x coords: 64-66, y coords: subset child hts
 lines(seq(64,66,length=100),rep(mean(near65$child),100),col="red",lwd=4)
 
 
@@ -1708,13 +1719,23 @@ lines(seq(70,72,length=100),rep(mean(near71$child),100),col="red",lwd=4)
 plot(galton$parent,galton$child,pch=19,col="blue")
 
 # Fit a linear model using basic least squares
+# Allows you to predict child given parent
 lm1 <- lm(galton$child ~ galton$parent)
 
-# Draw the regression line
+# Draw the regression line through the distribution
 lines(galton$parent,lm1$fitted,col="red",lwd=3)
 
 summary(lm1)
 names(lm1)
+
+lm1$coeff
+
+# Can use the trained linear model to preduct new child heights
+# For parent = 60
+predict_child <- lm1$coeff[1] + 60 * lm1$coeff[2]
+predict_child
+(Intercept) 
+62.71897 
 
 
 # Slide 183 - Linear Regression ----------------------------------
@@ -1724,6 +1745,8 @@ plot(galton$parent,galton$child,pch=19,col="blue")
 lines(galton$parent,lm1$fitted,col="red",lwd=3)
 
 # Residuals plot - shoudl all be centered around 0 line
+# Residuals are the distances between the actual points and the 
+# regression line. 
 plot(galton$parent,lm1$residuals,col="blue",pch=19)
 abline(c(0,0),col="red",lwd=3)
 
@@ -1752,6 +1775,10 @@ text(x+0.05,y+0.05,labels=as.character(1:12))
 # Slide 193 - K-means clustering --------------------------
 
 dataFrame <- data.frame(x,y)
+
+# You choose 3 centroids
+# YOu can also define the max # of iterations the algorithm is to 
+# perform just in case it doesn't converge. Defaults for iter.max is 10
 kmeansObj <- kmeans(dataFrame,centers=3)
 
 names(kmeansObj)   # List components of the kmeans object
@@ -1759,8 +1786,14 @@ names(kmeansObj)   # List components of the kmeans object
 [5] "tot.withinss" "betweenss"    "size"         "iter"        
 [9] "ifault" 
 
+# Which cluster each data point has been assigned to. 
 kmeansObj$cluster    # Grouping numbers of data points
 [1] 3 3 3 3 1 1 1 1 2 2 2 2
+
+# K-means is not a deterministic algorithm. If you use the exact same
+# data set with different starting centroids, it may converge to a 
+# different set of clusters. So you can use the nstart arg to take
+# an average. 
 
 
 # Slide 194 K-means clustering ---------------------------
