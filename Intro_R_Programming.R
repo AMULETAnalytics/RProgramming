@@ -2,6 +2,17 @@
 #
 # (c) AMULET Analytics
 
+# Installing new R updates -------------------------------
+
+install.packages("installr")
+
+library(installr)
+
+R.version.string
+
+updateR() # updating R.
+
+
 # Slide 15 -----------------------------------------------
 
 # <- is the assignment operator, = is almost the same. 
@@ -9,12 +20,14 @@
 x <- vector()    # Empty vector assignment 
 class(x)         # logical!
 
+
 # Slide 18 -----------------------------------------------
 
 x <- 1      # Integer vector with 1st element = 1
 print(x)
 
 msg <- "hello"   # Character vector, 1 element
+
 
 # Slide 19 ----------------------------------------------
 
@@ -25,10 +38,12 @@ print(x)     # Explicity printing
 
 # [1] 5    This means a vector of length 1 with element = 5
 
+
 # Slide 20 - Printing -----------------------------------
 
 x <- 1:20    # Use : operator to create integer sequences
 x
+
 
 # Slide 21 - Creating vectors ---------------------------
 
@@ -55,7 +70,7 @@ y <- c(TRUE, 2)   ## numeric vector (1,2), where TRUE=1, FALSE=0
 y <- c("a", TRUE) ## character vector ("a", "TRUE")
 
 
-# Slide 23 - Explicity coercion --------------------------
+# Slide 23 - Explicit coercion --------------------------
 
 x <- 0:6       # 0 1 2 3 4 5 6
 class(x)
@@ -76,7 +91,8 @@ as.character(x)
 as.complex(x)
 #[1] 0+0i 1+0i 2+0i 3+0i 4+0i 5+0i 6+0i
 
-# Slide 24 - Explicity coercion ------------------------
+
+# Slide 24 - Explicit coercion ------------------------
 
 x <- c("a", "b", "c")
 as.numeric(x)
@@ -86,6 +102,7 @@ as.numeric(x)
 
 as.logical(x)
 #[1] NA NA NA
+
 
 # Slide 25 - Matrices ----------------------------------
 
@@ -196,6 +213,7 @@ unclass(y)
 #attr(,"levels")
 #[1] "a" "b" "c"
 
+
 # Slide 32 - Factors ----------------------------------
 
 # Can also set order of levels
@@ -204,6 +222,7 @@ x <- factor(c("yes", "yes", "no", "yes", "no"),
 x
 #[1] yes yes no yes no
 #Levels: yes no
+
 
 # Slide 34 - Missing values ---------------------------
 
@@ -259,7 +278,6 @@ x             # Print with names
 
 names(x)       # Now just print the names, no values
 #[1] "foo" "bar" "norf"
-
 
 
 # Slide 38 - Names -------------------------------------
@@ -500,6 +518,7 @@ y[good]      # Eliminate NAs
 
 # airquality data frame found in Base R: 153x6
 # rows 5, 6 are have NAs
+data(airquality)
 airquality[1:6, ]     # Extract first 6 rows, all columns
 
 # Create a logical index of complete rows
@@ -507,6 +526,19 @@ good <- complete.cases(airquality)
 
 # Show first 6 complete rows
 airquality[good, ][1:6, ]
+
+
+# subset() function -------------------------------------------------
+
+x <- c(6, 1:3, NA, 12)
+x
+[1]  6  1  2  3 NA 12
+
+x[x > 5]
+[1]  6 NA 12    # Ordinary filtering ignores NAs
+
+subset(x, x>5)  # Use subset() to exclude NAs in result
+[1]  6 12
 
 
 # Slide 54 - Vectorized operations ---------------------
@@ -704,12 +736,14 @@ x <- 1:4
 # Generates random deviates
 args(runif)     # Check out arg list for uniform distribution fcn
 
+# arg n is number of observations
 # Create a list object
 # Element 1 has 1 random 
 # Element 2 has 2 randoms
 # Element 3 has 3 randoms
 # Element 4 has 4 randoms
-lapply(x, runif)  
+l2 <- lapply(x, runif) 
+l2
 [[1]]
 [1] 0.2675082
 
@@ -759,7 +793,7 @@ $b
 [3,]    3    6
 
 # Define a function inside of lappy() to select first column
-lapply(x, function(elt) elt[,1])
+l3 <- lapply(x, function(elt) elt[,1])
 $a
 [1] 1 2
 
@@ -786,7 +820,7 @@ $d
 
 # Now let's use sapply to simplify
 
-sapply(x, mean)   # Returns a numeric vector, NOT a list
+s1 <- sapply(x, mean)   # Returns a numeric vector, NOT a list
          a          b          c          d
 2.50000000 0.06082667 1.46708277 5.07474950
 
@@ -970,7 +1004,7 @@ lapply(s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")]))
 
 # The data set only has months May-Sept
 # Missing data causes the NA
-sapply(s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")]))
+s1 <- sapply(s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")]))
                5         6          7        8        9
 Ozone         NA        NA         NA       NA       NA
 Solar.R       NA 190.16667 216.483871       NA 167.4333
@@ -1043,6 +1077,11 @@ list(rep(1, 4), rep(2, 3), rep(3, 2), rep(4, 1))
 
 # mapply is quicker
 mapply(rep, 1:4, 4:1)
+# 1 4
+# 2 3
+# 3 2
+# 4 1
+
 [[1]]
 [1] 1 1 1 1
 
@@ -1070,6 +1109,12 @@ noise(1:5, 1:5, 2)
 # Slide 122 - instant vectorization -------------------
 
 mapply(noise, 1:5, 1:5, 2)
+# 1 1
+# 2 2
+# 3 3
+# 4 4
+# 5 5
+
 [[1]]
 [1] -2.765838
 
@@ -1333,7 +1378,7 @@ Time difference of -2 hours    #
 
 # Slide 149 Exploratory graphs --------------------------
 
-pData <- read.csv("ss06pid.csv")
+pData <- read.csv("ss06pid.csv")   # Need ~10MB file
 
 dim(pData)     # Data frame 14931x239
 
@@ -1545,7 +1590,7 @@ y <- 1:10
 
 # xlim, ylim - observations not in this range will be dropped completely
 plot(x,y,pch=19,xlim=c(0,11),ylim=c(0,11))
-
+ range will be dropped completely
 
 # Slide 168 - Missing values and plots ------------------------------
 
@@ -1627,6 +1672,7 @@ mtext(text="Figure (b)",side=3,line=1)
 
 par(mfrow=c(1,1))   # Reset panel argument
 
+
 # Slide 175 (additional) - Creating a PDF --------------------------
 
 pdf(file="twoPanel.pdf",height=4,width=8)
@@ -1638,6 +1684,7 @@ legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=
 mtext(text="(b)",side=3,line=1)
 dev.off()
 
+
 # Slide 175 (additional) - Creating a PNG --------------------------
 
 png(file="twoPanel.png",height=480,width=(2*480))
@@ -1648,7 +1695,6 @@ plot(pData$JWMNP,pData$WAGP,pch=19,cex=0.5,xlab="CT (min)",ylab="Wages (dollars)
 legend(100,200000,legend=c("men","women"),col=c("black","red"),pch=c(19,19),cex=c(0.5,0.5))
 mtext(text="(b)",side=3,line=1)
 dev.off()
-
 
 
 # Slide 176 - Linear Regression -----------------------------------
@@ -1664,6 +1710,7 @@ par(mfrow=c(1,2))
 hist(galton$child,col="blue",breaks=100)
 hist(galton$parent,col="blue",breaks=100)
 par(mfrow=c(1,1))
+
 
 # Slide 177 - Linear Regression -----------------------------------
 
@@ -1749,6 +1796,7 @@ lines(galton$parent,lm1$fitted,col="red",lwd=3)
 # regression line. 
 plot(galton$parent,lm1$residuals,col="blue",pch=19)
 abline(c(0,0),col="red",lwd=3)
+par(mfrow=c(1,1))
 
 
 # Slide 187 - K-means clustering --------------------------
